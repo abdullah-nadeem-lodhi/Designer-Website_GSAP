@@ -1,0 +1,10 @@
+/* App-level global styles for the premium cream portfolio.
+   Use Tailwind for component styling and keep this file available for future enhancements. */
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  scroll-behavior: smooth;
+}
