@@ -1,36 +1,70 @@
 import { useRef } from 'react';
 import { ArrowUpRight, Shield, Layers, Compass } from 'lucide-react';
 import gsap from 'gsap';
+import ScrollTrigger from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
-import Chatbot from '../components/Chatbot';
+
+gsap.registerPlugin(ScrollTrigger);
 
 export default function Home() {
   const containerRef = useRef(null);
 
-  // Safe, scoped GSAP animations that automatically clear memory on unmount
   useGSAP(() => {
     const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
 
-    tl.from('.hero-title-line', {
-      y: 100,
-      opacity: 0,
-      duration: 1.2,
-      stagger: 0.15,
-    })
-    .from('.hero-meta', {
-      y: 20,
-      opacity: 0,
-      duration: 0.8,
-    }, '-=0.6')
-    .from('.interactive-card', {
-      scale: 0.95,
-      opacity: 0,
-      duration: 1,
-      stagger: 0.1,
-    }, '-=0.4');
+    tl.fromTo('.hero-title-line', 
+      { y: 60, opacity: 0 },
+      { y: 0, opacity: 1, duration: 1.2, stagger: 0.15 }
+    )
+    .fromTo('.hero-meta', 
+      { y: 20, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.8 }, 
+      '-=0.6'
+    )
+    .fromTo('.interactive-card', 
+      { scale: 0.96, opacity: 0 },
+      { scale: 1, opacity: 1, duration: 0.8, stagger: 0.1 }, 
+      '-=0.4'
+    );
+
+    gsap.utils.toArray('.scroll-reveal').forEach((element) => {
+      const textLines = element.querySelectorAll('.text-reveal-line');
+
+      if (textLines.length) {
+        gsap.fromTo(textLines,
+          { y: 40, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.9,
+            stagger: 0.12,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: element,
+              start: 'top 85%',
+              toggleActions: 'play none none reverse',
+            },
+          }
+        );
+      } else {
+        gsap.fromTo(element,
+          { y: 40, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.9,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: element,
+              start: 'top 85%',
+              toggleActions: 'play none none reverse',
+            },
+          }
+        );
+      }
+    });
   }, { scope: containerRef });
 
-  // Safe data arrays to handle content rendering adaptively without hardcoding blocks
   const capabilities = [
     { 
       icon: <Layers className="w-5 h-5 text-studioDark" />, 
@@ -60,17 +94,18 @@ export default function Home() {
       <header className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-start mb-32">
         <div className="lg:col-span-8 space-y-6">
           <span className="hero-meta block font-sans tracking-widest text-xs uppercase text-studioDark-muted border-b border-cream-200 pb-2 max-w-fit">
-            Digital Design & Interaction Studio
+            <span className="text-reveal-line inline-block">Digital Design & Interaction Studio</span>
           </span>
           <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl tracking-tight leading-[1.05] font-light">
-            <span className="hero-title-line block overflow-hidden">We shape raw code</span>
-            <span className="hero-title-line block overflow-hidden text-studioDark-muted italic">into experiential</span>
-            <span className="hero-title-line block overflow-hidden">digital realities.</span>
+            <span className="hero-title-line block overflow-hidden"><span className="text-reveal-line inline-block">We shape raw code</span></span>
+            <span className="hero-title-line block overflow-hidden text-studioDark-muted italic"><span className="text-reveal-line inline-block">into experiential</span></span>
+            <span className="hero-title-line block overflow-hidden"><span className="text-reveal-line inline-block">digital realities.</span></span>
           </h1>
         </div>
         <div className="hero-meta lg:col-span-4 lg:pt-16 space-y-6">
           <p className="text-lg text-studioDark-muted font-light leading-relaxed">
-            A boutique design group working at the intersection of raw frontend engineering and editorial typography. We build interfaces that command focus.
+            <span className="text-reveal-line inline-block">A boutique design group working at the intersection of raw frontend engineering and editorial typography.</span>
+            <span className="text-reveal-line inline-block">We build interfaces that command focus.</span>
           </p>
           <button className="group flex items-center gap-3 px-6 py-3 border border-studioDark text-sm tracking-wider uppercase hover:bg-studioDark hover:text-cream-50 transition-colors duration-300">
             Explore Portfolio
@@ -81,9 +116,9 @@ export default function Home() {
 
       {/* Interactive Project Showcase Grid */}
       <section className="max-w-7xl mx-auto mb-32">
-        <div className="flex justify-between items-end border-b border-cream-200 pb-4 mb-12">
-          <h2 className="font-serif text-2xl md:text-3xl font-light">Selected Work</h2>
-          <span className="text-xs uppercase tracking-widest text-studioDark-muted">Curated Showcase</span>
+        <div className="scroll-reveal flex justify-between items-end border-b border-cream-200 pb-4 mb-12">
+          <h2 className="font-serif text-2xl md:text-3xl font-light"><span className="text-reveal-line inline-block">Selected Work</span></h2>
+          <span className="text-xs uppercase tracking-widest text-studioDark-muted"><span className="text-reveal-line inline-block">Curated Showcase</span></span>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -109,23 +144,21 @@ export default function Home() {
       </section>
 
       {/* Capabilities / Studio Focus Section */}
-      <section className="max-w-7xl mx-auto bg-cream-100 border border-cream-200 p-8 md:p-16">
+      <section className="scroll-reveal max-w-7xl mx-auto bg-cream-100 border border-cream-200 p-8 md:p-16">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           {(capabilities || []).map((item, idx) => (
             <div key={idx} className="space-y-4">
               <div className="w-10 h-10 rounded-full bg-cream-50 flex items-center justify-center border border-cream-200 shadow-sm">
                 {item.icon}
               </div>
-              <h4 className="font-serif text-xl font-normal">{item.title}</h4>
+              <h4 className="font-serif text-xl font-normal"><span className="text-reveal-line inline-block">{item.title}</span></h4>
               <p className="text-sm text-studioDark-muted font-light leading-relaxed">
-                {item.desc}
+                <span className="text-reveal-line inline-block">{item.desc}</span>
               </p>
             </div>
           ))}
         </div>
       </section>
-
-      <Chatbot />
     </div>
   );
 }
